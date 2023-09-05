@@ -56,13 +56,9 @@ class CategoryTest extends TestCase
         ->json('put', 'api/category/'. $category->id, [
             "name" => "Category Update"
         ])
-        ->assertStatus(201);
+        ->assertStatus(200);
     }
 
-    public function testCategoryisDeleted()
-    {
-
-    }
     private function getAuthToken()
     {
         $user = User::find(1);
