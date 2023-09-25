@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\Category;
+use App\Models\Project;
 use App\Models\TaskPriority;
 use App\Models\TaskStatus;
 use App\Models\User;
@@ -23,6 +24,8 @@ return new class extends Migration
             $table->string('title');
             $table->longText('description');
             $table->dateTime('due_date');
+            $table->foreignIdFor(Project::class);
+            $table->foreignIdFor(User::class, 'assigned_to_user_id');
             $table->foreignIdFor(TaskPriority::class);
             $table->foreignIdFor(TaskStatus::class);
     
