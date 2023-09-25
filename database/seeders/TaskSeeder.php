@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Category;
+use App\Models\Project;
 use App\Models\Task;
 use App\Models\TaskPriority;
 use App\Models\TaskStatus;
@@ -21,6 +22,7 @@ class TaskSeeder extends Seeder
         $users = User::all();
         $task_priorities = TaskPriority::all();
         $task_statuses = TaskStatus::all();
+        $projects = Project::all();
 
         foreach ($categories as $category) {
             for ($i=0; $i < rand(1, 10); $i++) { 
@@ -28,8 +30,10 @@ class TaskSeeder extends Seeder
                 Task::factory()->create ([
                     'user_id' => $user->id,
                     'category_id' => $category->id,
+                    'project_id' => $projects->random()->id,
                     'task_priority_id' => $task_priorities->random(),
-                    'task_status_id' => $task_statuses->random()
+                    'task_status_id' => $task_statuses->random(),
+                    'assigned_to_user_id' => $users->random()->id
                 ]);
             }
         }
