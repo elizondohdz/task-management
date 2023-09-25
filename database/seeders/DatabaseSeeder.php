@@ -17,6 +17,7 @@ class DatabaseSeeder extends Seeder
         $this->call(TaskStatusSeeder::class);
         $this->call(TaskPrioritySeeder::class);
         $this->call(CategorySeeder::class);
+        $this->call(ProjectSeeder::class);
         $this->call(TaskSeeder::class);
 
     }
