@@ -5,72 +5,88 @@ namespace Tests\Feature;
 use App\Models\Category;
 use App\Models\User;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
-use Laravel\Sanctum\PersonalAccessToken;
 use Tests\TestCase;
 
 class CategoryTest extends TestCase
 {
-
-    protected $token = "";
-
     use DatabaseMigrations;
 
-    public function setUp(): void 
+    protected $user;
+    protected $category;
+
+    public function setUp(): void
     {
         parent::setUp();
-        $this->seed();
-        $this->token = $this->getAuthToken();
+        $this->user = User::factory()->create();
+        $this->category = Category::factory()->create();
     }
 
-    public function testCategoryIndexReturnsItems()
-    {               
-        
-    $this->withHeaders([
-                'Accept' => 'application/json',
-                'Authorization' => 'Bearer ' . $this->token])
-            ->json('get', 'api/category')
-            ->assertStatus(200);
-    }
-
-    public function testCategoryIsCreated()
+    public function test_category_index()
     {
-        $this->withHeaders([
-            'Accept' => 'application/json',
-            'Authorization' => 'Bearer ' . $this->token])
-        ->json('post', 'api/category', [
-            "name" => "New Category Testing"
-        ])
-        ->assertStatus(201);
+        Category::factory(2)->create();
+
+        $response = $this->actingAs($this->user)->get('/api/category');
+        $response->assertStatus(200);
+        $data = $response->json('data');
+        $this->assertCount(3, $data);
     }
 
-    public function testCategoryIsUpdated()
+    public function test_category_store()
     {
-        
-        $category = Category::where('user_id', 1)->first();
-   
-        $this->withHeaders([
-            'Accept' => 'application/json',
-            'Authorization' => 'Bearer ' . $this->token])
-        ->json('put', 'api/category/'. $category->id, [
-            "name" => "Category Update"
-        ])
-        ->assertStatus(200);
-    }
-
-    private function getAuthToken()
-    {
-        $user = User::find(1);
-
-        $payload = [
-            "email" => $user->email,
-            "password" => "password"
+        $data = [
+            'name' => 'New Category',
         ];
-                
-        $response = $this->json('post', 'api/login', $payload);
-            
-        return json_decode($response->getContent())->token;
+
+        $response = $this->actingAs($this->user)->post('/api/category', $data);
+        $response->assertStatus(201);
+        $response->assertJsonFragment($data);
+    }
+
+    public function test_category_show()
+    {
+        $response = $this->actingAs($this->user)
+            ->get("/api/category/{$this->category->id}");
+        $response->assertStatus(200);
+        $response->assertJson([
+            'data' => [
+                'name' => $this->category->name,
+            ],
+        ]);
+    }
+
+    public function test_category_update()
+    {
+        $data = [
+            'name' => 'Updated Category',
+        ];
+
+        $response = $this->actingAs($this->user)
+            ->put("/api/category/{$this->category->id}", $data);
+
+        $response->assertStatus(200);
+        $response->assertJsonFragment($data);
+    }
+
+    public function test_category_destroy()
+    {
+        $response = $this->actingAs($this->user)
+            ->delete("/api/category/{$this->category->id}");
+
+        $response->assertStatus(204);
+        $this->assertDatabaseMissing('categories', ['id' => $this->category->id]);
+    }
+
+    public function test_category_store_with_invalid_data()
+    {
+        $data = [
+            'name' => '',
+        ];
+
+        $response = $this->actingAs($this->user)->withHeaders(['Accept' => 'application/json'])
+            ->post('/api/category', $data);
+
+        $response->assertStatus(422);
+        $response->assertJsonStructure(['message', 'errors']);
     }
 
 }
