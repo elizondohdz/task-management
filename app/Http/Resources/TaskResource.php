@@ -23,7 +23,7 @@ class TaskResource extends JsonResource
             'due_date' => $this->due_date,
             'priority' => $this->taskPriority->priority,
             'status' => $this->taskStatus->status,
-            'created_at' => $this->created_at
+            'created_at' => $this->created_at->diffForHumans()
         ];
     }
 }
