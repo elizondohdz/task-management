@@ -21,7 +21,7 @@ class TaskPolicy
      */
     public function view(User $user, Task $task): bool
     {
-        return $task->user_id === $user->id || $task->category()->user_id === $user->id;
+        return true;
     }
 
     /**
@@ -37,7 +37,7 @@ class TaskPolicy
      */
     public function update(User $user, Task $task): bool
     {
-        return $task->user_id === $user->id || $task->category()->user_id === $user->id;
+        return $task->user_id === $user->id || $task->category->user_id === $user->id;
     }
 
     /**
@@ -45,7 +45,7 @@ class TaskPolicy
      */
     public function delete(User $user, Task $task): bool
     {
-        return $task->user_id === $user->id || $task->category()->user_id === $user->id;
+        return $task->user_id === $user->id || $task->category->user_id === $user->id;
     }
 
     /**
