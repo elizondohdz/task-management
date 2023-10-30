@@ -11,7 +11,12 @@ class DatabaseSeeder extends Seeder
      * Seed the application's database.
      */
     public function run(): void
-    {        
+    {
+        \App\Models\User::factory()->create([
+            'email' => 'admin@example.com',
+            'name' => 'Admin Example'
+        ]);
+
         \App\Models\User::factory(100)->create();
 
         $this->call(TaskStatusSeeder::class);

@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\CategoryResource;
 use App\Models\Category;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Gate;
 
 class CategoryController extends Controller
 {
@@ -14,6 +13,7 @@ class CategoryController extends Controller
     public function __construct() 
     {
         $this->middleware('auth:sanctum');
+        $this->middleware('throttle:60,1');
         $this->authorizeResource(Category::class);
     }
 
